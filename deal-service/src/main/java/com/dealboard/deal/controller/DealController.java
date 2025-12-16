@@ -22,10 +22,16 @@ public class DealController {
     public Deal createDeal(
             @RequestHeader("X-ORG-ID") Long orgId,
             @RequestHeader("X-USER-ID") Long userId,
+            @RequestHeader("X-ROLE") String role,
             @RequestBody Deal deal) {
+
+        if (!role.equals("ADMIN") && !role.equals("MANAGER")) {
+            throw new RuntimeException("Access denied");
+        }
 
         return service.createDeal(orgId, userId, deal);
     }
+
 
     // Get all deals for org
     @GetMapping
@@ -38,9 +44,15 @@ public class DealController {
     // Update deal stage
     @PatchMapping("/{dealId}/stage")
     public Deal updateStage(
+            @RequestHeader("X-ROLE") String role,
             @PathVariable Long dealId,
             @RequestBody Map<String, String> body) {
 
+        if (!role.equals("ADMIN") && !role.equals("MANAGER")) {
+            throw new RuntimeException("Access denied");
+        }
+
         return service.updateStage(dealId, body.get("stage"));
     }
+
 }

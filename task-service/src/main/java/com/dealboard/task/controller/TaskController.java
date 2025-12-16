@@ -20,10 +20,13 @@ public class TaskController {
     @PostMapping
     public Task createTask(
             @RequestHeader("X-ORG-ID") Long orgId,
+            @RequestHeader("X-USER-ID") Long userId,
+            @RequestHeader("X-ROLE") String role,
             @RequestBody Task task) {
 
-        return service.createTask(orgId, task);
+        return service.createTask(orgId, userId, role, task);
     }
+
 
     // Get tasks for org
     @GetMapping
@@ -32,4 +35,15 @@ public class TaskController {
 
         return service.getTasks(orgId);
     }
+
+    @PatchMapping("/{taskId}/complete")
+    public Task completeTask(
+            @PathVariable Long taskId,
+            @RequestHeader("X-USER-ID") Long userId,
+            @RequestHeader("X-ROLE") String role) {
+
+        return service.completeTask(taskId, userId, role);
+    }
+
+
 }
