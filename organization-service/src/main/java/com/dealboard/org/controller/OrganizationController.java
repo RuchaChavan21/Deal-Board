@@ -4,7 +4,9 @@ import com.dealboard.org.entity.Organization;
 import com.dealboard.org.entity.OrganizationMember;
 import com.dealboard.org.service.OrganizationService;
 import org.springframework.web.bind.annotation.*;
-
+import java.util.HashMap;
+import java.util.stream.Collectors;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -32,11 +34,36 @@ public class OrganizationController {
     }
 
     // Get organizations of current user
+    // Get organizations of current user
+    // Get organizations of current user
     @GetMapping("/my")
-    public List<OrganizationMember> myOrganizations(
-            @RequestHeader("X-USER-ID") Long userId) {
+    public List<Map<String, Object>> myOrganizations(@RequestHeader("X-USER-ID") Long userId) {
 
-        return service.getUserOrganizations(userId);
+        List<OrganizationMember> members = service.getUserOrganizations(userId);
+
+        // We will build a new list containing the Name and Description
+        return members.stream().map(member -> {
+            Map<String, Object> result = new HashMap<>();
+
+            // 1. Put the member info
+            result.put("userId", userId);
+            result.put("role", member.getRole());
+            result.put("organizationId", member.getOrganizationId());
+
+            // 2. THE FIX: Use the Service to look up the Organization details by ID
+            Organization org = service.getOrganizationById(member.getOrganizationId());
+
+            if (org != null) {
+                // Now we have the name!
+                result.put("id", org.getId());
+                result.put("name", org.getName());
+                result.put("description", org.getDescription());
+            } else {
+                result.put("name", "Unknown Organization");
+            }
+
+            return result;
+        }).collect(Collectors.toList());
     }
 
     // Add member to organization

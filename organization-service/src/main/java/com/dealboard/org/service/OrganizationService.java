@@ -52,4 +52,12 @@ public class OrganizationService {
 
         memberRepo.save(member);
     }
+
+    // inside OrganizationService.java
+
+    public Organization getOrganizationById(Long id) {
+        // Assuming you have a repository.
+        // If you use JpaRepository, it's findById(id).orElse(null);
+        return orgRepo.findById(id).orElse(null);
+    }
 }
