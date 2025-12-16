@@ -1,8 +1,10 @@
 package com.dealboard.deal.service;
 
+import com.dealboard.deal.dto.ActivityRequest;
 import com.dealboard.deal.entity.Deal;
 import com.dealboard.deal.repository.DealRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -11,9 +13,13 @@ import java.util.List;
 public class DealService {
 
     private final DealRepository repository;
+    private final RestTemplate restTemplate;
 
-    public DealService(DealRepository repository) {
+
+
+    public DealService(DealRepository repository, RestTemplate restTemplate) {
         this.repository = repository;
+        this.restTemplate = restTemplate;
     }
 
     public Deal createDeal(Long orgId, Long userId, Deal deal) {
@@ -28,8 +34,30 @@ public class DealService {
                 deal.getExpectedCloseDate()
         );
 
-        return repository.save(newDeal);
+        Deal savedDeal = repository.save(newDeal);
+
+        try {
+            System.out.println("CALLING ACTIVITY SERVICE FOR DEAL " + savedDeal.getId());
+
+            ActivityRequest activity = new ActivityRequest(
+                    orgId,
+                    "DEAL",
+                    savedDeal.getId(),
+                    "DEAL_CREATED",
+                    "Deal created",
+                    userId
+            );
+
+            restTemplate.postForObject(
+                    "http://localhost:8087/activities",
+                    activity,
+                    Void.class
+            );
+        } catch (Exception ignored) {}
+
+        return savedDeal;
     }
+
 
     public List<Deal> getDeals(Long orgId) {
         return repository.findByOrganizationId(orgId);
@@ -52,4 +80,6 @@ public class DealService {
 
         return repository.save(deal);
     }
+
+
 }

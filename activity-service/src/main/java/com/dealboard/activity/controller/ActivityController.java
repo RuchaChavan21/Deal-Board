@@ -25,10 +25,12 @@ public class ActivityController {
     // FETCH TIMELINE
     @GetMapping
     public List<Activity> getTimeline(
-            @RequestHeader("X-ORG-ID") Long orgId,
+            @RequestParam Long orgId,
             @RequestParam String entityType,
             @RequestParam Long entityId
-    ) {
+    )
+    {
         return service.getTimeline(orgId, entityType, entityId);
     }
+
 }
