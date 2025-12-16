@@ -60,4 +60,9 @@ public class OrganizationService {
         // If you use JpaRepository, it's findById(id).orElse(null);
         return orgRepo.findById(id).orElse(null);
     }
+
+    public List<Organization> getAllOrganizations() {
+        return orgRepo.findAll();
+    }
+
 }

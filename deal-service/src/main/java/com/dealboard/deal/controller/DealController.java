@@ -23,7 +23,9 @@ public class DealController {
             @RequestHeader("X-ORG-ID") Long orgId,
             @RequestHeader("X-USER-ID") Long userId,
             @RequestHeader("X-ROLE") String role,
-            @RequestBody Deal deal) {
+            @RequestBody Deal deal)
+    {
+        System.out.println("ROLE RECEIVED: [" + role + "]");
 
         if (!role.equals("ADMIN") && !role.equals("MANAGER")) {
             throw new RuntimeException("Access denied");

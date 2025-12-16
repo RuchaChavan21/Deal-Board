@@ -24,7 +24,12 @@ public class OrganizationController {
     @PostMapping
     public Organization createOrganization(
             @RequestHeader("X-USER-ID") Long userId,
+            @RequestHeader("X-ROLE") String role,
             @RequestBody Map<String, String> body) {
+
+        if (!"ADMIN".equalsIgnoreCase(role)) {
+            throw new RuntimeException("Only ADMIN can create organization");
+        }
 
         return service.createOrganization(
                 userId,
@@ -32,6 +37,7 @@ public class OrganizationController {
                 body.get("description")
         );
     }
+
 
     // Get organizations of current user
     // Get organizations of current user
@@ -80,4 +86,11 @@ public class OrganizationController {
 
         return "Member added successfully";
     }
+
+    // Get all organizations (visible to everyone)
+    @GetMapping
+    public List<Organization> getAllOrganizations() {
+        return service.getAllOrganizations();
+    }
+
 }
